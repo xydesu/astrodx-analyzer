@@ -2,43 +2,42 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>AstroDX Score Analyzer</title>
+    <title>AstroDX 分數分析器</title>
 
-  <meta property="og:title" content="AstroDX Score Analyzer" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://beerpiss.github.io/astrodx-analyzer/" />
-  <meta property="og:description" content="Tool for analyzing scores from AstroDX Android version" />
-  <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="AstroDX 分數分析器" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://beerpiss.github.io/astrodx-analyzer/" />
+    <meta property="og:description" content="AstroDX 分數分析工具 (Android 版)" />
+    <meta property="og:locale" content="zh_TW" />
 
-  <link rel="stylesheet" href="styles/index.css" />
-  <script src="scripts/decryptor/reflektone_decrypt.js" defer></script>
-  <script src="scripts/index.js" defer></script>
-  <script src="scripts/alpine.js" defer></script>
-  <script data-goatcounter="https://backdrop-dealt-satiable.goatcounter.com/count" async
-    src="//gc.zgo.at/count.js"></script>
+    <link rel="stylesheet" href="styles/index.css" />
+    <script src="scripts/decryptor/reflektone_decrypt.js" defer></script>
+    <script src="scripts/index.js" defer></script>
+    <script src="scripts/alpine.js" defer></script>
+    <script data-goatcounter="https://backdrop-dealt-satiable.goatcounter.com/count" async
+        src="//gc.zgo.at/count.js"></script>
 </head>
 
 </html>
 
 <body>
-  <h2 class="title">AstroDX Score Analyzer</h2>
+    <h2 class="title">AstroDX 分數分析器</h2>
 
-  <noscript>
-    You probably have JavaScript disabled.<br />
-    This site needs JavaScript to render its contents and calculate your rating.<br />
-    We don't use it to track you or do anything malicious. You'll need to enable JavaScript for this site to work.
-  </noscript>
+    <noscript>
+        您的瀏覽器似乎停用了 JavaScript。<br />
+        本站需要啟用 JavaScript 才能顯示內容並計算您的 Rating。<br />
+        我們不會使用它來追蹤您或進行任何惡意操作。您必須啟用 JavaScript 才能正常使用本站。
+    </noscript>
 
-  <div
-    x-data="{ region: 'intl', version: 'buddiesplus', totalRating: 0, best50: [], tsvRows: [], file: null, wasm_initialized: false, status: '', newCharts: [], oldCharts: [], oldRating: '', newRating: '' }"
-    x-effect="file && await analyzeRating(region, version, file, $data)"
-    x-init="wasm_bindgen().then(_ => wasm_initialized = true);">
-    <table id="options" class="no-borders">
-      <tbody>
-        <!--<tr>
+    <div x-data="{ region: 'intl', version: 'circle', totalRating: 0, best50: [], tsvRows: [], file: null, wasm_initialized: false, status: '', newCharts: [], oldCharts: [], oldRating: '', newRating: '' }"
+        x-effect="file && await analyzeRating(region, version, file, $data)"
+        x-init="wasm_bindgen().then(_ => wasm_initialized = true);">
+        <table id="options" class="no-borders">
+            <tbody>
+                <!--<tr>
             <td>
                 <label for="options__region-select">Region</label>
             </td>
@@ -49,159 +48,153 @@
                 </select>
             </td>
         </tr>-->
-        <tr>
-          <td>
-            <label for="options__version">Game version</label>
-          </td>
-          <td>
-            <select id="options__version" x-model="version">
-              <option value="universeplus">UNiVERSE PLUS</option>
-              <option value="festival">FESTiVAL</option>
-              <option value="festivalplus">FESTiVAL PLUS</option>
-              <option value="buddies" selected>BUDDiES</option>
-              <option value="buddiesplus" selected>BUDDiES PLUS</option>
-            </select>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="analyze-rating__description">
-      <h3 class="analyze-rating__mf_i_said_android_only_please_read">Android only.</h3>
-      Select a <code>cache</code> (AstroDX 2.0 beta),
-      <code>level-index.nya</code> (AstroDX 2.0 dev), or
-      <code>chart-meta.fufu</code>
-      (AstroDX 1.1.1) file to get started.
-    </div>
-    <div class="analyze-rating__buttons">
-      <label class="analyze-rating__button" for="cache-input">
-        <input class="sr-only" type="file" id="cache-input" :disabled="!wasm_initialized"
-          @change="file = $event.target.files[0]" />
-        <span class="analyze-rating__button-text"
-          x-text="wasm_initialized ? 'Upload a file...' : 'Loading...'">Loading...</span>
-      </label>
-      <div x-cloak x-show="tsvRows.length > 0" class="analyze-rating__button" @click="exportToTsv(tsvRows)">
-        <span class="analyze-rating__button-text">Export to TSV</span>
-      </div>
-    </div>
-    <p x-html="status"></p>
-
-    <div x-cloak x-show="best50.length > 0">
-      <hr class="separator" />
-
-      <h2 class="title">Analysis result</h2>
-      <div class="rating__overview">
-        <div class="rating__total">
-          Rating: <span x-text="totalRating"></span>
-        </div>
-        <table class="ratingOverviewTable">
-          <tbody>
-            <tr>
-              <td>New Chart Rating</td>
-              <td class="columnColumn">：</td>
-              <td class="subRatingColumn" x-text="newRating"></td>
-            </tr>
-            <tr>
-              <td>New Chart Rating</td>
-              <td>：</td>
-              <td class="subRatingColumn" x-text="oldRating"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div x-cloak x-show="newCharts.length > 0">
-        <h2 class="title">New Chart (BUDDiES PLUS)</h2>
-        <table id="new-charts">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Song</th>
-              <th scope="col">Difficuty</th>
-              <th scope="col">Level</th>
-              <th scope="col">Achv</th>
-              <th scope="col">Rank</th>
-              <th scope="col">Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template x-for="(chart, index) in newCharts" :key="index">
-              <tr :class="'chart-row chart-row__' + chart.difficulty.toLowerCase().replace(':', '')">
-                <td class="chart-row__ranking" x-text="index + 1"></td>
-                <td class="chart-row__title" x-text="chart.title + displayedChartType(chart.chartType)"></td>
-                <td class="chart-row__difficulty" x-text="chart.difficulty"></td>
-                <td class="chart-row__level" x-text="(chart.isEstimatedLevel ? '~' : '') + chart.level.toFixed(1)"></td>
-                <td class="chart-row__achievement" x-text="chart.achievement.toFixed(4) + '%'"></td>
-                <td class="chart-row__rank" x-text="chart.rank"></td>
-                <td class="chart-row__rating" x-text="chart.rating"></td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-        <div x-cloak x-show="oldCharts.length > 0">
-          <h2 class="title">Old Chart (Others)</h2>
-          <table id="old-charts">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Song</th>
-                <th scope="col">Difficuty</th>
-                <th scope="col">Level</th>
-                <th scope="col">Achv</th>
-                <th scope="col">Rank</th>
-                <th scope="col">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template x-for="(chart, index) in oldCharts" :key="index">
-                <tr :class="'chart-row chart-row__' + chart.difficulty.toLowerCase().replace(':', '')">
-                  <td class="chart-row__ranking" x-text="index + 1"></td>
-                  <td class="chart-row__title" x-text="chart.title + displayedChartType(chart.chartType)"></td>
-                  <td class="chart-row__difficulty" x-text="chart.difficulty"></td>
-                  <td class="chart-row__level" x-text="(chart.isEstimatedLevel ? '~' : '') + chart.level.toFixed(1)">
-                  </td>
-                  <td class="chart-row__achievement" x-text="chart.achievement.toFixed(4) + '%'"></td>
-                  <td class="chart-row__rank" x-text="chart.rank"></td>
-                  <td class="chart-row__rating" x-text="chart.rating"></td>
+                <tr>
+                    <td>
+                        <label for="options__version">遊戲版本</label>
+                    </td>
+                    <td>
+                        <select id="options__version" x-model="version">
+                            <option value="universeplus">UNiVERSE PLUS</option>
+                            <option value="festival">FESTiVAL</option>
+                            <option value="festivalplus">FESTiVAL PLUS</option>
+                            <option value="buddies">BUDDiES</option>
+                            <option value="buddiesplus">BUDDiES PLUS</option>
+                            <option value="prism">PRiSM</option>
+                            <option value="prismplus">PRiSM PLUS</option>
+                            <option value="circle" selected>CiRCLE</option>
+                        </select>
+                    </td>
                 </tr>
-              </template>
             </tbody>
-          </table>
+        </table>
+
+        <div class="analyze-rating__description">
+            請選取 <code>cache</code> 檔案以開始分析。
         </div>
-        <span>After BUDDiES PLUS: X+ = X.6, X.7, X.8, X.9</span>
-        <br>
-        <span>Before BUDDiES PLUS: X+ = X.7, X.8, X.9</span>
-      </div>
+        <div class="analyze-rating__buttons">
+            <label class="analyze-rating__button" for="cache-input">
+                <input class="sr-only" type="file" id="cache-input" :disabled="!wasm_initialized"
+                    @change="file = $event.target.files[0]" />
+                <span class="analyze-rating__button-text"
+                    x-text="wasm_initialized ? '上傳檔案...' : '載入中...'">Loading...</span>
+            </label>
+            <div x-cloak x-show="tsvRows.length > 0" class="analyze-rating__button" @click="exportToTsv(tsvRows)">
+                <span class="analyze-rating__button-text">匯出 TSV</span>
+            </div>
+        </div>
+        <p x-html="status"></p>
 
-      <hr class="separator" />
-      <h2 class="title">Frequently Asked Questions</h2>
-      <ul class="faq">
-        <li>
-          Q: <span class="faq__question">Will there be iOS support?</span><br />
-          A:
-          <span class="faq__answer">
-            Unfortunately, no. AstroDX on iOS generates a unique
-            <code>cache</code> encryption key every installation.
-          </span>
-        </li>
-        <li>
-          Q: <span class="faq__question">Can I export my scores?</span><br />
-          A: <span class="faq__answer">Soon™.</span>
-        </li>
-      </ul>
+        <div x-cloak x-show="best50.length > 0">
+            <hr class="separator" />
 
-      <hr class="separator" />
-      <h2 class="title">Credits</h2>
-      <ul>
-        <li>
-          <a href="https://github.com/myjian" target="_blank">myjian</a> for the
-          CSS.
-        </li>
-        <li>
-          <a href="https://github.com/alpinejs/alpine" target="_blank">AlpineJS</a>
-        </li>
-      </ul>
-      <noscript>
-        <img src="https://backdrop-dealt-satiable.goatcounter.com/count?p=/astrodx-analyzer">
-      </noscript>
+            <h2 class="title">分析結果</h2>
+            <div class="rating__overview">
+                <div class="rating__total">
+                    總 Rating: <span x-text="totalRating"></span>
+                </div>
+                <table class="ratingOverviewTable">
+                    <tbody>
+                        <tr>
+                            <td>新曲 Rating</td>
+                            <td class="columnColumn">：</td>
+                            <td class="subRatingColumn" x-text="newRating"></td>
+                        </tr>
+                        <tr>
+                            <td>舊曲 Rating</td>
+                            <td>：</td>
+                            <td class="subRatingColumn" x-text="oldRating"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div x-cloak x-show="newCharts.length > 0">
+                <h2 class="title">新曲</h2>
+                <table id="new-charts">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">曲名</th>
+                            <th scope="col">難度</th>
+                            <th scope="col">等級</th>
+                            <th scope="col">達成率</th>
+                            <th scope="col">評級</th>
+                            <th scope="col">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(chart, index) in newCharts" :key="index">
+                            <tr :class="'chart-row chart-row__' + chart.difficulty.toLowerCase().replace(':', '')">
+                                <td class="chart-row__ranking" x-text="index + 1"></td>
+                                <td class="chart-row__title" x-text="chart.title + displayedChartType(chart.chartType)">
+                                </td>
+                                <td class="chart-row__difficulty" x-text="chart.difficulty"></td>
+                                <td class="chart-row__level"
+                                    x-text="(chart.isEstimatedLevel ? '~' : '') + chart.level.toFixed(1)"></td>
+                                <td class="chart-row__achievement" x-text="chart.achievement.toFixed(4) + '%'"></td>
+                                <td class="chart-row__rank" x-text="chart.rank"></td>
+                                <td class="chart-row__rating" x-text="chart.rating"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div x-cloak x-show="oldCharts.length > 0">
+                    <h2 class="title">舊曲</h2>
+                    <table id="old-charts">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">曲名</th>
+                                <th scope="col">難度</th>
+                                <th scope="col">等級</th>
+                                <th scope="col">達成率</th>
+                                <th scope="col">評級</th>
+                                <th scope="col">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(chart, index) in oldCharts" :key="index">
+                                <tr :class="'chart-row chart-row__' + chart.difficulty.toLowerCase().replace(':', '')">
+                                    <td class="chart-row__ranking" x-text="index + 1"></td>
+                                    <td class="chart-row__title"
+                                        x-text="chart.title + displayedChartType(chart.chartType)"></td>
+                                    <td class="chart-row__difficulty" x-text="chart.difficulty"></td>
+                                    <td class="chart-row__level"
+                                        x-text="(chart.isEstimatedLevel ? '~' : '') + chart.level.toFixed(1)">
+                                    </td>
+                                    <td class="chart-row__achievement" x-text="chart.achievement.toFixed(4) + '%'"></td>
+                                    <td class="chart-row__rank" x-text="chart.rank"></td>
+                                    <td class="chart-row__rating" x-text="chart.rating"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <span>BUDDiES PLUS 後：X+ = X.6, X.7, X.8, X.9</span>
+                <br>
+                <span>BUDDiES PLUS 前：X+ = X.7, X.8, X.9</span>
+            </div>
+
+            <hr class="separator" />
+            <h2 class="title">常見問題</h2>
+            <ul class="faq">
+                <li>
+                    Q: <span class="faq__question">我可以匯出分數嗎？</span><br />
+                    A: <span class="faq__answer">Soon™ (即將推出)。</span>
+                </li>
+            </ul>
+
+            <hr class="separator" />
+            <h2 class="title">銘謝</h2>
+            <ul>
+                <li>
+                    感謝 <a href="https://github.com/myjian" target="_blank">myjian</a> 提供 CSS 樣式。
+                </li>
+                <li>
+                    <a href="https://github.com/alpinejs/alpine" target="_blank">AlpineJS</a>
+                </li>
+            </ul>
+            <noscript>
+                <img src="https://backdrop-dealt-satiable.goatcounter.com/count?p=/astrodx-analyzer">
+            </noscript>
 </body>
